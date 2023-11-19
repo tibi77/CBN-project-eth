@@ -13,7 +13,6 @@ import Link from "next/link";
 import Image from "next/image";
 
 const FrontLayout = (props: any) => {
-
   return (
     <Box>
       <List
@@ -31,6 +30,9 @@ const FrontLayout = (props: any) => {
           height={100}
           style={{
             marginRight: "2em",
+          }}
+          onClick={() => {
+            window.location.href = "/";
           }}
         />
         {Menu.LINKS.map(({ text, href, icon: Icon }) => (
@@ -52,7 +54,7 @@ const FrontLayout = (props: any) => {
             }
             sx={{
               textAlign: "center",
-              color: "primary"
+              color: "primary",
             }}
           >
             <ListItemText primary="Login" />
