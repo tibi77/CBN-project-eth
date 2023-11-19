@@ -4,6 +4,7 @@ import { useAppState } from "../../stateContext";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbsDownIcon from "@mui/icons-material/ThumbDown";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 const Blockchain = () => {
   const { posts } = useAppState();
@@ -11,7 +12,6 @@ const Blockchain = () => {
   const [walletAddr, setwalletAddr] = useState("");
 
   useEffect(() => {
-    console.log(typeof window);
     setwalletAddr(localStorage.getItem("walletAddr") || ("" as string));
   }, []);
   return (
@@ -56,9 +56,12 @@ const Blockchain = () => {
                     display: "flex",
                     flexDirection: "row",
                     gap: "3em",
-                    justifyContent: "flex-end",
+                    justifyContent: "flex-start",
+                    alignItems: "center",
                   }}
                 >
+                  <Link href={post.file}  target="self">IPFS</Link>
+                  <Box sx={{ flexGrow: 1 }} />
                   <IconButton>
                     <ThumbUpIcon color="secondary" />
                   </IconButton>

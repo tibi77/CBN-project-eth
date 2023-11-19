@@ -25,7 +25,7 @@ export const CustomStateProvider = (props: PropsWithChildren) => {
         const f = `https://${post.path}.ipfs.w3s.link/${post.file}`;
         const res = await fetch(f);
         const data = await res.json();
-        return data;
+        return { ...data, file: f };
       });
       const _posts = await Promise.all(promises);
       setPosts(_posts);
