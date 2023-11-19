@@ -81,9 +81,7 @@ const Layout = (props: any) => {
               }
             />
           ) : (
-            <Button variant="contained" size="small" color="secondary">
-              Connect wallet
-            </Button>
+            <Typography>Connect wallet</Typography>
           )}
         </Button>
 
