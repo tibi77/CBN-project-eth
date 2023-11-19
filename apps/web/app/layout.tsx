@@ -9,6 +9,7 @@ export const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
 });
+import { UserProvider } from '@auth0/nextjs-auth0/client';
 
 export default function RootLayout({
   children,
@@ -23,7 +24,11 @@ export default function RootLayout({
           fontSans.variable,
         )}
       >
+        <UserProvider>
+
         <AsyncLayoutDynamic>{children}</AsyncLayoutDynamic>
+        </UserProvider>
+
       </body>
     </html>
   );
