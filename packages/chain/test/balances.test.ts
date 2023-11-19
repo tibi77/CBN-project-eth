@@ -28,7 +28,7 @@ describe("balances", () => {
     const balances = appChain.runtime.resolve("Balances");
 
     const tx1 = await appChain.transaction(alice, () => {
-      balances.addBalance(alice, UInt64.from(1000));
+      balances.add(alice, UInt64.from(1000));
     });
 
     await tx1.sign();
@@ -37,7 +37,6 @@ describe("balances", () => {
     const block = await appChain.produceBlock();
 
     const balance = await appChain.query.runtime.Balances.balances.get(alice);
-
     expect(block?.txs[0].status).toBe(true);
     expect(balance?.toBigInt()).toBe(1000n);
   }, 1_000_000);

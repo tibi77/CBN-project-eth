@@ -1,36 +1,58 @@
 import {
   RuntimeModule,
+  runtimeMethod,
   runtimeModule,
   state,
-  runtimeMethod,
 } from "@proto-kit/module";
-import { State, StateMap, assert } from "@proto-kit/protocol";
+import { StateMap } from "@proto-kit/protocol";
 import { PublicKey, UInt64 } from "o1js";
+import { assert } from "@proto-kit/protocol";
 
-interface BalancesConfig {
-  totalSupply: UInt64;
+export const errors = {
+  underflow: "Cannot subtract, the result would underflow",
+  overflow: "Cannot add, the result would overflow",
+};
+
+export function safeSub(
+  a: UInt64,
+  b: UInt64,
+  error: string = errors.underflow
+) {
+  const fieldSub = a.value.sub(b.value);
+  const fieldSubTruncated = fieldSub.rangeCheckHelper(UInt64.NUM_BITS);
+  const doesNotUnderflow = fieldSubTruncated.equals(fieldSub);
+
+  assert(doesNotUnderflow, error);
+
+  return new UInt64(fieldSubTruncated);
 }
 
+export function safeAdd(a: UInt64, b: UInt64, error = errors.overflow) {
+  const fieldAdd = a.value.add(b.value);
+  const fieldAddTruncated = fieldAdd.rangeCheckHelper(UInt64.NUM_BITS);
+  const doesNotOverflow = fieldAddTruncated.equals(fieldAdd);
+
+  assert(doesNotOverflow, error);
+
+  return new UInt64(fieldAddTruncated);
+}
 @runtimeModule()
-export class Balances extends RuntimeModule<BalancesConfig> {
+export class Balances extends RuntimeModule<unknown> {
   @state() public balances = StateMap.from<PublicKey, UInt64>(
     PublicKey,
     UInt64
   );
 
-  @state() public circulatingSupply = State.from<UInt64>(UInt64);
-
   @runtimeMethod()
-  public addBalance(address: PublicKey, amount: UInt64): void {
-    const circulatingSupply = this.circulatingSupply.get();
-    const newCirculatingSupply = circulatingSupply.value.add(amount);
-    assert(
-      newCirculatingSupply.lessThanOrEqual(this.config.totalSupply),
-      "Circulating supply would be higher than total supply"
-    );
-    this.circulatingSupply.set(newCirculatingSupply);
-    const currentBalance = this.balances.get(address);
-    const newBalance = currentBalance.value.add(amount);
-    this.balances.set(address, newBalance);
+  public add(to: PublicKey, amount: UInt64) {
+    const balance = this.balances.get(to);
+    const newBalance = safeAdd(balance.value, amount);
+    this.balances.set(to, newBalance);
+  }
+  @runtimeMethod()
+  public subtract(from: PublicKey, amount: UInt64) {
+    const balance = this.balances.get(from);
+    const newBalance = safeSub(balance.value, amount);
+    this.balances.set(from, newBalance);
   }
 }
