@@ -3,13 +3,18 @@ import { Box, Divider, IconButton, Typography } from "@mui/material";
 import { useAppState } from "../../stateContext";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbsDownIcon from "@mui/icons-material/ThumbDown";
+import { useEffect, useState } from "react";
+
 
 const Politics = () => {
   const { posts } = useAppState();
   const category = "Politics";
+  const [walletAddr, setwalletAddr] = useState("");
 
-  const walletAddress = localStorage.getItem("walletAddr");
-
+useEffect(() => {
+  console.log(typeof window)
+  setwalletAddr(localStorage.getItem("walletAddr") || "" as string);
+}, []);
   return (
     <FrontLayout>
       <h1>Politics</h1>
@@ -18,6 +23,7 @@ const Politics = () => {
         .map((post) => {
           return (
             <Box
+              key={post.title}
               sx={{
                 display: "flex",
                 flexDirection: "column",
@@ -45,7 +51,7 @@ const Politics = () => {
                 <Typography variant="body1">{post.article}</Typography>
               </Box>
               <Divider />
-              {walletAddress && (
+              {walletAddr && (
                 <Box
                   sx={{
                     display: "flex",
